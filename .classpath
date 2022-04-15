@@ -16,10 +16,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Noah/JavaMail/javax.mail.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Noah/JavaMail/javax.mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
