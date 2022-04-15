@@ -7,6 +7,7 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -31,33 +32,29 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
-		
-		String pop3Host = "pop.gmail.com";
-		String mailStoreType = "pop3s";
-		final String username = "Noah_12320@hotmail.com";
-		final String password = "abc123";
-		
-		receiveMail(pop3Host, mailStoreType, username, password);
-		
 		System.out.println("Launch successful");
 		launch(args);
 	}
 	
-	public static void receiveMail(String pop3Host, String storeType, String username, String password)
+	public static void receiveMail(String username, String password)
 	{
 		Properties props = new Properties();
 		
-		props.put("mail.pop3.host", props);
-		props.put("mail.pop3.port", "995");
-		props.put("mail.pop3.starttls.enable", "true");
-		props.put("mail.store.protocol", "pop3");
+		 props.setProperty("mail.transport.protocol", "smtp");
+		 props.setProperty("mail.host", "smtp.live.com");
+		 props.put("mail.smtp.starttls.enable", "true");
+		 props.put("mail.smtp.auth", "true");
 		
-		Session session = Session.getInstance(props);
+		 props.put("mail.smtp.starttls.enable", "true");
+		 Session session = Session.getDefaultInstance(props); 
+		 session.setDebug(true);
 		
 		try {
 			
-			Store mailStore = session.getStore(storeType);
-			mailStore.connect(username, password);
+			Store mailStore = session.getStore("imaps");
+			//Transport trans = session.getTransport("smtp");
+			//trans.connect("smtp.live.com", 25, username, password);
+			mailStore.connect("imap-mail.outlook.com", username, password);
 			
 			Folder folder = mailStore.getFolder("INBOX");
 			folder.open(Folder.READ_ONLY);
