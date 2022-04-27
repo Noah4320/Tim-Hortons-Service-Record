@@ -46,7 +46,7 @@ public class Main extends Application {
 		 props.put("mail.smtp.auth", "true");
 		
 		 props.put("mail.smtp.starttls.enable", "true");
-		 Session session = Session.getDefaultInstance(props); 
+		 Session session = Session.getInstance(props); 
 		 session.setDebug(true);
 		
 		try {

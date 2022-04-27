@@ -17,5 +17,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Noah/JavaMail/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Noah/JavaMail/javax.activation-1.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
