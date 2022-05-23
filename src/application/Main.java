@@ -8,6 +8,7 @@ import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
+import javax.mail.search.FromStringTerm;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -59,12 +60,13 @@ public class Main extends Application {
 			Folder folder = mailStore.getFolder("INBOX");
 			folder.open(Folder.READ_ONLY);
 			
-			Message[] emailMessages = folder.getMessages();
+			Message[] emailMessages = folder.search(new FromStringTerm(""));
 			System.out.println("Total Message - " + emailMessages.length);
 			
 			//Iternate the messages
 			for (int i = 0; i < emailMessages.length; i++) {
 				Message message = emailMessages[i];
+				
 				Address[] toAddress = message.getRecipients(Message.RecipientType.TO);
 				System.out.println();
 				System.out.println("Email " + (i+1) + "-");
@@ -79,6 +81,7 @@ public class Main extends Application {
 				System.out.println("Text - " + message.getContent().toString());
 				
 			}
+			
 			
 			
 			folder.close(false);
