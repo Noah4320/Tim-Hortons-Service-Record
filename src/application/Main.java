@@ -1,5 +1,8 @@
 package application;
 	
+import java.text.DateFormatSymbols;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -78,7 +81,30 @@ public class Main extends Application {
 					System.out.println(toAddress[j].toString());
 				}
 				
-				System.out.println("Text - " + message.getContent().toString());
+				String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 				
+				List<String> shifts = Arrays.asList(shiftsSplit);
+				shifts = shifts.subList(6, 13);
+				
+				DateFormatSymbols calendar = new DateFormatSymbols();
+				String[] months = calendar.getShortMonths();
+				String[] daysOfWeek = calendar.getWeekdays();
+				
+				
+				for (String shift : shifts) {
+					
+					for (String month : months) {
+						
+						boolean isMonth = shift.contains(month);
+						
+						if (isMonth) {
+							System.out.println(month);
+						}
+						
+					}
+					
+				}
+				
+				//System.out.println("Text - " + message.getContent().toString());
 				
 			}
 			
