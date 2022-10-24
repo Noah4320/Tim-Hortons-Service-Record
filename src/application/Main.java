@@ -1,6 +1,7 @@
 package application;
 	
 import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -11,7 +12,11 @@ import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
+import javax.mail.search.AndTerm;
+import javax.mail.search.ComparisonTerm;
 import javax.mail.search.FromStringTerm;
+import javax.mail.search.ReceivedDateTerm;
+import javax.mail.search.SearchTerm;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -63,8 +68,22 @@ public class Main extends Application {
 			Folder folder = mailStore.getFolder("INBOX");
 			folder.open(Folder.READ_ONLY);
 			
-			Message[] emailMessages = folder.search(new FromStringTerm(""));
+			 SimpleDateFormat df1 = new SimpleDateFormat( "MM/dd/yy" );
+		     String fDate="03/01/22";
+		     java.util.Date fromDate = df1.parse(fDate);
+		     String tDate="05/01/22";
+		     java.util.Date toDate = df1.parse(tDate);
+			
+			SearchTerm filterAddress = new FromStringTerm("clearviewconnect");
+			SearchTerm filterFromDate = new ReceivedDateTerm(ComparisonTerm.GT, fromDate);
+			SearchTerm filterToDate = new ReceivedDateTerm(ComparisonTerm.LT, toDate);
+			SearchTerm[] allFilters = {filterAddress, filterFromDate, filterToDate};
+			SearchTerm filters = new AndTerm(allFilters);
+			
+		
+			Message[] emailMessages = folder.search(filters);
 			System.out.println("Total Message - " + emailMessages.length);
+			
 			
 			//Iternate the messages
 			for (int i = 0; i < emailMessages.length; i++) {
@@ -81,10 +100,13 @@ public class Main extends Application {
 					System.out.println(toAddress[j].toString());
 				}
 				
-				String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 				
+				//Removes all new lines
+				String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 		
+				//Convert to list and take shift data only. ToDo: Considering taking manager name of who distributed email and which store 
 				List<String> shifts = Arrays.asList(shiftsSplit);
 				shifts = shifts.subList(6, 13);
 				
+				//Get calendar metadata
 				DateFormatSymbols calendar = new DateFormatSymbols();
 				String[] months = calendar.getShortMonths();
 				String[] daysOfWeek = calendar.getWeekdays();
@@ -104,7 +126,7 @@ public class Main extends Application {
 					
 				}
 				
-				//System.out.println("Text - " + message.getContent().toString());
+				System.out.println("Text - " + message.getContent().toString());
 				
 			}
 			
