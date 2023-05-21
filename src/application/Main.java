@@ -2,9 +2,15 @@ package application;
 	
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Address;
 import javax.mail.Folder;
@@ -60,27 +66,31 @@ public class Main extends Application {
 		
 		try {
 			
+			//sign in
 			Store mailStore = session.getStore("imaps");
 			//Transport trans = session.getTransport("smtp");
 			//trans.connect("smtp.live.com", 25, username, password);
 			mailStore.connect("imap-mail.outlook.com", username, password);
 			
+			//Open inbox
 			Folder folder = mailStore.getFolder("INBOX");
 			folder.open(Folder.READ_ONLY);
 			
+			//Parse to/from dates
 			 SimpleDateFormat df1 = new SimpleDateFormat( "MM/dd/yy" );
 		     String fDate="03/01/22";
 		     java.util.Date fromDate = df1.parse(fDate);
 		     String tDate="05/01/22";
 		     java.util.Date toDate = df1.parse(tDate);
 			
+		    //Create filters
 			SearchTerm filterAddress = new FromStringTerm("clearviewconnect");
 			SearchTerm filterFromDate = new ReceivedDateTerm(ComparisonTerm.GT, fromDate);
 			SearchTerm filterToDate = new ReceivedDateTerm(ComparisonTerm.LT, toDate);
 			SearchTerm[] allFilters = {filterAddress, filterFromDate, filterToDate};
 			SearchTerm filters = new AndTerm(allFilters);
 			
-		
+			//Apply filters
 			Message[] emailMessages = folder.search(filters);
 			System.out.println("Total Message - " + emailMessages.length);
 			
@@ -93,7 +103,6 @@ public class Main extends Application {
 				System.out.println();
 				System.out.println("Email " + (i+1) + "-");
 				System.out.println("From - " + message.getFrom()[0]);
-				
 				System.out.println("To - ");
 				
 				for (int j = 0; j < toAddress.length; j++) {
@@ -103,8 +112,8 @@ public class Main extends Application {
 				//Removes all new lines
 				String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 		
 				//Convert to list and take shift data only. ToDo: Considering taking manager name of who distributed email and which store 
-				List<String> shifts = Arrays.asList(shiftsSplit);
-				shifts = shifts.subList(6, 13);
+				List<String> shiftsAsString = Arrays.asList(shiftsSplit);
+				shiftsAsString = shiftsAsString.subList(6, 13);
 				
 				//Get calendar metadata
 				DateFormatSymbols calendar = new DateFormatSymbols();
@@ -112,7 +121,44 @@ public class Main extends Application {
 				String[] daysOfWeek = calendar.getWeekdays();
 				
 				
-				for (String shift : shifts) {
+				for (String shift : shiftsAsString) {
+				
+				        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
+				        Matcher matcher = pattern.matcher(shift);
+				        
+				        String startTimeString = null;
+			            String endTimeString = null;
+				        
+			            //Get start and end time
+				        while (matcher.find()) {
+				            
+				            
+				            if (startTimeString == null)
+				            {
+				            	startTimeString = matcher.group();
+				            }
+				            else
+				            {
+				            	endTimeString = matcher.group();
+				            }
+				        }
+				        
+				       //Process the times
+				       if (startTimeString != null && endTimeString != null)
+				       {
+				    	   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mma");
+					        LocalTime startTime = LocalTime.parse(startTimeString, formatter);
+					        LocalTime endTime = LocalTime.parse(endTimeString, formatter);
+
+					        // calculate the duration between the two times
+					        Duration duration = Duration.between(startTime, endTime);
+					        
+					        System.out.printf("Duration: %d hours, %d minutes, %d seconds",
+					                duration.toHours(),
+					                duration.toMinutesPart(),
+					                duration.toSecondsPart()
+					        );
+				       }
 					
 					for (String month : months) {
 						
