@@ -3,10 +3,12 @@ package application;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -98,7 +100,8 @@ public class Main extends Application {
 			//Iternate the messages
 			for (int i = 0; i < emailMessages.length; i++) {
 				Message message = emailMessages[i];
-				
+				//5, 9
+				String[] subjectSplit = message.getSubject().split(" ");
 				Address[] toAddress = message.getRecipients(Message.RecipientType.TO);
 				System.out.println();
 				System.out.println("Email " + (i+1) + "-");
@@ -121,10 +124,14 @@ public class Main extends Application {
 				String[] daysOfWeek = calendar.getWeekdays();
 				
 				
-				for (String shift : shiftsAsString) {
+				for (String shiftAsString : shiftsAsString) {
+					
+					String monthDayAsString = shiftAsString.split(":")[0].trim();
+					String monthAsString = monthDayAsString.split(" ")[0].trim();
+					String dayAsString = monthDayAsString.split(" ")[1].trim();
 				
 				        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
-				        Matcher matcher = pattern.matcher(shift);
+				        Matcher matcher = pattern.matcher(shiftAsString);
 				        
 				        String startTimeString = null;
 			            String endTimeString = null;
@@ -147,22 +154,22 @@ public class Main extends Application {
 				       if (startTimeString != null && endTimeString != null)
 				       {
 				    	   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mma");
+				    	   DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
 					        LocalTime startTime = LocalTime.parse(startTimeString, formatter);
 					        LocalTime endTime = LocalTime.parse(endTimeString, formatter);
 
-					        // calculate the duration between the two times
-					        Duration duration = Duration.between(startTime, endTime);
+					        LocalDate date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
 					        
-					        System.out.printf("Duration: %d hours, %d minutes, %d seconds",
-					                duration.toHours(),
-					                duration.toMinutesPart(),
-					                duration.toSecondsPart()
-					        );
+					        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
+					        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
+					        
+					        Shift shift = new Shift(startDateTime, endDateTime, null);
+					        shift.getDuration();
 				       }
 					
 					for (String month : months) {
 						
-						boolean isMonth = shift.contains(month);
+						boolean isMonth = shiftAsString.contains(month);
 						
 						if (isMonth) {
 							System.out.println(month);

@@ -33,17 +33,28 @@ public class Shift {
 	}
 	
 	
-	private String getMonth() {
+	public String getMonth() {
 		return months[calendar.get(Calendar.MONTH)];
 	}
 	
-	private String getDayOfWeek() {
+	public String getDayOfWeek() {
 		return daysOfWeek[calendar.get(Calendar.DAY_OF_WEEK)];
 	}
 	
-	private void getTotalHours(Date fromDate, Date toDate) {
+	public void getTotalHours(Date fromDate, Date toDate) {
 		
 	}
 	
+	public Duration getDuration() {
+		  // calculate the duration between the two times
+        Duration duration = Duration.between(startDateTime.toLocalTime(), finishDateTime.toLocalTime());
+        
+        System.out.printf("Duration: %d hours, %d minutes, %d seconds",
+                duration.toHours(),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()
+        );  
+        return duration;
+	}
 
 }
