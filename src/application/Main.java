@@ -1,5 +1,6 @@
 package application;
 	
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 import javax.mail.Address;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -85,15 +87,10 @@ public class Main extends Application {
 		     String tDate="05/01/22";
 		     java.util.Date toDate = df1.parse(tDate);
 			
-		    //Create filters
-			SearchTerm filterAddress = new FromStringTerm("clearviewconnect");
-			SearchTerm filterFromDate = new ReceivedDateTerm(ComparisonTerm.GT, fromDate);
-			SearchTerm filterToDate = new ReceivedDateTerm(ComparisonTerm.LT, toDate);
-			SearchTerm[] allFilters = {filterAddress, filterFromDate, filterToDate};
-			SearchTerm filters = new AndTerm(allFilters);
+		    
 			
 			//Apply filters
-			Message[] emailMessages = folder.search(filters);
+			Message[] emailMessages = folder.search(applyFilters(fromDate, toDate));
 			System.out.println("Total Message - " + emailMessages.length);
 			
 			
@@ -111,20 +108,14 @@ public class Main extends Application {
 				for (int j = 0; j < toAddress.length; j++) {
 					System.out.println(toAddress[j].toString());
 				}
-				
-				//Removes all new lines
-				String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 		
-				//Convert to list and take shift data only. ToDo: Considering taking manager name of who distributed email and which store 
-				List<String> shiftsAsString = Arrays.asList(shiftsSplit);
-				shiftsAsString = shiftsAsString.subList(6, 13);
-				
+			
 				//Get calendar metadata
 				DateFormatSymbols calendar = new DateFormatSymbols();
 				String[] months = calendar.getShortMonths();
 				String[] daysOfWeek = calendar.getWeekdays();
 				
 				
-				for (String shiftAsString : shiftsAsString) {
+				for (String shiftAsString : getShiftsAsString(message)) {
 					
 					String monthDayAsString = shiftAsString.split(":")[0].trim();
 					String monthAsString = monthDayAsString.split(" ")[0].trim();
@@ -153,10 +144,11 @@ public class Main extends Application {
 				       //Process the times
 				       if (startTimeString != null && endTimeString != null)
 				       {
-				    	   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mma");
+				    	   DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mma");
 				    	   DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
-					        LocalTime startTime = LocalTime.parse(startTimeString, formatter);
-					        LocalTime endTime = LocalTime.parse(endTimeString, formatter);
+				    	   
+					        LocalTime startTime = LocalTime.parse(startTimeString, timeFormatter);
+					        LocalTime endTime = LocalTime.parse(endTimeString, timeFormatter);
 
 					        LocalDate date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
 					        
@@ -191,6 +183,27 @@ public class Main extends Application {
 			e.printStackTrace();
 			System.err.println("Error in receiving email.");
 		}
+	}
+	
+	public static SearchTerm applyFilters(Date fromDate, Date toDate) {
+		//Create filters
+		SearchTerm filterAddress = new FromStringTerm("clearviewconnect");
+		SearchTerm filterFromDate = new ReceivedDateTerm(ComparisonTerm.GT, fromDate);
+		SearchTerm filterToDate = new ReceivedDateTerm(ComparisonTerm.LT, toDate);
+		SearchTerm[] allFilters = {filterAddress, filterFromDate, filterToDate};
+		SearchTerm filters = new AndTerm(allFilters);
+		
+		return filters;
+	}
+	
+	public static List<String> getShiftsAsString(Message message) throws IOException, MessagingException {
+		//Removes all new lines
+		String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 		
+		//Convert to list and take shift data only. ToDo: Considering taking manager name of who distributed email and which store 
+		List<String> shiftsAsString = Arrays.asList(shiftsSplit);
+		shiftsAsString = shiftsAsString.subList(6, 13);
+		
+		return shiftsAsString;
 	}
 	
 }
