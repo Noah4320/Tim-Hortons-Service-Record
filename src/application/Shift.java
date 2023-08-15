@@ -12,33 +12,24 @@ public class Shift {
 	private LocalDateTime finishDateTime;
 	private String booker;
 	private double money;
-	private boolean mainStore;
-	private Duration duration;
+	private String store;
 	
 	
-	
-	private DateFormatSymbols calendarFormat = new DateFormatSymbols();
-	private String[] months = calendarFormat.getMonths();
-	private String[] daysOfWeek = calendarFormat.getWeekdays();
-	
-	Calendar calendar = Calendar.getInstance();
-	
-	
-	public Shift (LocalDateTime startDateTime, LocalDateTime finishDateTime, String booker) {
+	public Shift (LocalDateTime startDateTime, LocalDateTime finishDateTime, String store, String booker) {
 		this.startDateTime = startDateTime;
 		this.finishDateTime = finishDateTime;
+		this.store = store;
 		this.booker = booker;
-		//calendar.setTime(date);
 		
 	}
 	
 	
 	public String getMonth() {
-		return months[calendar.get(Calendar.MONTH)];
+		return startDateTime.getMonth().toString();
 	}
 	
 	public String getDayOfWeek() {
-		return daysOfWeek[calendar.get(Calendar.DAY_OF_WEEK)];
+		return startDateTime.getDayOfWeek().toString();
 	}
 	
 	public void getTotalHours(Date fromDate, Date toDate) {
@@ -49,7 +40,7 @@ public class Shift {
 		  // calculate the duration between the two times
         Duration duration = Duration.between(startDateTime.toLocalTime(), finishDateTime.toLocalTime());
         
-        System.out.printf("Duration: %d hours, %d minutes, %d seconds",
+        System.out.printf("Duration: %d hours, %d minutes, %d seconds %n",
                 duration.toHours(),
                 duration.toMinutesPart(),
                 duration.toSecondsPart()

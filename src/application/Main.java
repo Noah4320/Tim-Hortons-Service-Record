@@ -51,7 +51,7 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Launch successful");
+		//System.out.println("Launch successful");
 		launch(args);
 	}
 	
@@ -66,7 +66,7 @@ public class Main extends Application {
 		
 		 props.put("mail.smtp.starttls.enable", "true");
 		 Session session = Session.getInstance(props); 
-		 session.setDebug(true);
+		 session.setDebug(false);
 		
 		try {
 			
@@ -91,7 +91,7 @@ public class Main extends Application {
 			
 			//Apply filters
 			Message[] emailMessages = folder.search(applyFilters(fromDate, toDate));
-			System.out.println("Total Message - " + emailMessages.length);
+			//System.out.println("Total Message - " + emailMessages.length);
 			
 			
 			//Iternate the messages
@@ -100,26 +100,19 @@ public class Main extends Application {
 				//5, 9
 				String[] subjectSplit = message.getSubject().split(" ");
 				Address[] toAddress = message.getRecipients(Message.RecipientType.TO);
-				System.out.println();
-				System.out.println("Email " + (i+1) + "-");
-				System.out.println("From - " + message.getFrom()[0]);
-				System.out.println("To - ");
-				
-				for (int j = 0; j < toAddress.length; j++) {
-					System.out.println(toAddress[j].toString());
-				}
-			
-				//Get calendar metadata
-				DateFormatSymbols calendar = new DateFormatSymbols();
-				String[] months = calendar.getShortMonths();
-				String[] daysOfWeek = calendar.getWeekdays();
-				
+				String booker = message.getContent().toString().split("\\r?\\n")[15].trim();
+
+				System.out.println("Text - " + message.getContent().toString());
 				
 				for (String shiftAsString : getShiftsAsString(message)) {
+					
+					if (!shiftAsString.contains("Not Scheduled"))
+					{
 					
 					String monthDayAsString = shiftAsString.split(":")[0].trim();
 					String monthAsString = monthDayAsString.split(" ")[0].trim();
 					String dayAsString = monthDayAsString.split(" ")[1].trim();
+					String store = shiftAsString.split(" ")[12].trim();
 				
 				        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
 				        Matcher matcher = pattern.matcher(shiftAsString);
@@ -141,7 +134,7 @@ public class Main extends Application {
 				            }
 				        }
 				        
-				       //Process the times
+				       //Process the date and times
 				       if (startTimeString != null && endTimeString != null)
 				       {
 				    	   DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mma");
@@ -155,23 +148,15 @@ public class Main extends Application {
 					        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
 					        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
 					        
-					        Shift shift = new Shift(startDateTime, endDateTime, null);
+					        Shift shift = new Shift(startDateTime, endDateTime, store, booker);
 					        shift.getDuration();
+					        System.out.println("Month: " + shift.getMonth());
 				       }
-					
-					for (String month : months) {
-						
-						boolean isMonth = shiftAsString.contains(month);
-						
-						if (isMonth) {
-							System.out.println(month);
-						}
-						
 					}
 					
 				}
 				
-				System.out.println("Text - " + message.getContent().toString());
+				
 				
 			}
 			
