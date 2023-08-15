@@ -18,6 +18,8 @@ public class MainSceneController {
 	private TextField usernameTextField;
 	@FXML
 	private TextField passwordTextField;
+	
+	DataSingleton data = DataSingleton.getInstance();
 
 	// Event Listener on TextField.onAction
 	@FXML
@@ -33,13 +35,17 @@ public class MainSceneController {
 	// Event Listener on Button.onAction
 	@FXML
 	public void btnOkClicked(ActionEvent event) throws IOException {
-		Stage mainWindow = (Stage) usernameTextField.getScene().getWindow();
+		Stage mainWindow = (Stage) usernameTextField.getScene().getWindow();	
 		String username = usernameTextField.getText();
 		String password = passwordTextField.getText();
-		Main.receiveMail(username, password);
 		
-		Parent root = FXMLLoader.load(getClass().getResource("DisplayDataScene.fxml"));
-	    Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		data.setShifts(Main.receiveMail(username, password));
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
+		Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		
+		Parent root = loader.load();
+
 	    Scene scene = new Scene(root);
 	    stage.setScene(scene);
 	    stage.show();

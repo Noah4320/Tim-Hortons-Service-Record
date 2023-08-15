@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -55,7 +56,7 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	public static void receiveMail(String username, String password)
+	public static List<Shift> receiveMail(String username, String password)
 	{
 		Properties props = new Properties();
 		
@@ -67,6 +68,8 @@ public class Main extends Application {
 		 props.put("mail.smtp.starttls.enable", "true");
 		 Session session = Session.getInstance(props); 
 		 session.setDebug(true);
+		 
+		 List<Shift> shifts = new ArrayList<Shift>();
 		
 		try {
 			
@@ -91,8 +94,7 @@ public class Main extends Application {
 			
 			//Apply filters
 			Message[] emailMessages = folder.search(applyFilters(fromDate, toDate));
-			System.out.println("Total Message - " + emailMessages.length);
-			
+			System.out.println("Total Message - " + emailMessages.length);	
 			
 			//Iternate the messages
 			for (int i = 0; i < emailMessages.length; i++) {
@@ -113,8 +115,7 @@ public class Main extends Application {
 				DateFormatSymbols calendar = new DateFormatSymbols();
 				String[] months = calendar.getShortMonths();
 				String[] daysOfWeek = calendar.getWeekdays();
-				
-				
+
 				for (String shiftAsString : getShiftsAsString(message)) {
 					
 					String monthDayAsString = shiftAsString.split(":")[0].trim();
@@ -156,6 +157,7 @@ public class Main extends Application {
 					        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
 					        
 					        Shift shift = new Shift(startDateTime, endDateTime, null);
+					        shifts.add(shift);
 					        shift.getDuration();
 				       }
 					
@@ -183,6 +185,7 @@ public class Main extends Application {
 			e.printStackTrace();
 			System.err.println("Error in receiving email.");
 		}
+		return shifts;
 	}
 	
 	public static SearchTerm applyFilters(Date fromDate, Date toDate) {
