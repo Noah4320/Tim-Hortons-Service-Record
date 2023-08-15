@@ -5,10 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import javafx.event.ActionEvent;
 
@@ -18,6 +20,10 @@ public class MainSceneController {
 	private TextField usernameTextField;
 	@FXML
 	private TextField passwordTextField;
+	@FXML
+	private DatePicker fromDatePicker;
+	@FXML
+	private DatePicker toDatePicker;
 	
 	DataSingleton data = DataSingleton.getInstance();
 
@@ -39,7 +45,10 @@ public class MainSceneController {
 		String username = usernameTextField.getText();
 		String password = passwordTextField.getText();
 		
-		data.setShifts(Main.receiveMail(username, password));
+		String fromDate = fromDatePicker.toString();
+		String toDate = toDatePicker.toString();
+		
+		data.setShifts(Main.receiveMail(username, password, fromDate, toDate));
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
 		Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

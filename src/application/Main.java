@@ -56,7 +56,7 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	public static List<Shift> receiveMail(String username, String password)
+	public static List<Shift> receiveMail(String username, String password, String fromDateString, String toDateString)
 	{
 		Properties props = new Properties();
 		
