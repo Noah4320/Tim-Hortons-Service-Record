@@ -53,6 +53,7 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		System.out.println("Launch successful");
+		//System.out.println("Launch successful");
 		launch(args);
 	}
 	
@@ -70,6 +71,7 @@ public class Main extends Application {
 		 session.setDebug(true);
 		 
 		 List<Shift> shifts = new ArrayList<Shift>();
+		 session.setDebug(false);
 		
 		try {
 			
@@ -95,6 +97,7 @@ public class Main extends Application {
 			//Apply filters
 			Message[] emailMessages = folder.search(applyFilters(fromDate, toDate));
 			System.out.println("Total Message - " + emailMessages.length);	
+			//System.out.println("Total Message - " + emailMessages.length);
 			
 			//Iternate the messages
 			for (int i = 0; i < emailMessages.length; i++) {
@@ -116,11 +119,19 @@ public class Main extends Application {
 				String[] months = calendar.getShortMonths();
 				String[] daysOfWeek = calendar.getWeekdays();
 
+				String booker = message.getContent().toString().split("\\r?\\n")[15].trim();
+
+				System.out.println("Text - " + message.getContent().toString());
+				
 				for (String shiftAsString : getShiftsAsString(message)) {
+					
+					if (!shiftAsString.contains("Not Scheduled"))
+					{
 					
 					String monthDayAsString = shiftAsString.split(":")[0].trim();
 					String monthAsString = monthDayAsString.split(" ")[0].trim();
 					String dayAsString = monthDayAsString.split(" ")[1].trim();
+					String store = shiftAsString.split(" ")[12].trim();
 				
 				        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
 				        Matcher matcher = pattern.matcher(shiftAsString);
@@ -142,7 +153,7 @@ public class Main extends Application {
 				            }
 				        }
 				        
-				       //Process the times
+				       //Process the date and times
 				       if (startTimeString != null && endTimeString != null)
 				       {
 				    	   DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mma");
@@ -159,21 +170,12 @@ public class Main extends Application {
 					        Shift shift = new Shift(startDateTime, endDateTime, null);
 					        shifts.add(shift);
 					        shift.getDuration();
+					        System.out.println("Month: " + shift.getMonth());
 				       }
-					
-					for (String month : months) {
-						
-						boolean isMonth = shiftAsString.contains(month);
-						
-						if (isMonth) {
-							System.out.println(month);
-						}
-						
 					}
 					
 				}
 				
-				System.out.println("Text - " + message.getContent().toString());
 				
 			}
 			
