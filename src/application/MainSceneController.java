@@ -45,10 +45,7 @@ public class MainSceneController {
 		String username = usernameTextField.getText();
 		String password = passwordTextField.getText();
 		
-		String fromDate = fromDatePicker.toString();
-		String toDate = toDatePicker.toString();
-		
-		data.setShifts(Main.receiveMail(username, password, fromDate, toDate));
+		data.setShifts(Main.receiveMail(username, password, fromDatePicker.getValue(), toDatePicker.getValue()));
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
 		Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

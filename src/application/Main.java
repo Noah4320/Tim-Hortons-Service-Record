@@ -57,7 +57,7 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	public static List<Shift> receiveMail(String username, String password, String fromDateString, String toDateString)
+	public static List<Shift> receiveMail(String username, String password, LocalDate localFromDate, LocalDate localToDate)
 	{
 		Properties props = new Properties();
 		
@@ -86,11 +86,11 @@ public class Main extends Application {
 			folder.open(Folder.READ_ONLY);
 			
 			//Parse to/from dates
-			 SimpleDateFormat df1 = new SimpleDateFormat( "MM/dd/yy" );
-		     String fDate="03/01/22";
-		     java.util.Date fromDate = df1.parse(fDate);
-		     String tDate="05/01/22";
-		     java.util.Date toDate = df1.parse(tDate);
+			DateTimeFormatter localStringFormatter = DateTimeFormatter.ofPattern("MM/dd/yy");
+			
+			 SimpleDateFormat localDateFormatter = new SimpleDateFormat( "MM/dd/yy" );
+		     java.util.Date fromDate = localDateFormatter.parse(localFromDate.format(localStringFormatter));
+		     java.util.Date toDate = localDateFormatter.parse(localToDate.format(localStringFormatter));
 			
 		    
 			
