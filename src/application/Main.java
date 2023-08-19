@@ -167,7 +167,7 @@ public class Main extends Application {
 					        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
 					        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
 					        
-					        Shift shift = new Shift(startDateTime, endDateTime, null);
+					        Shift shift = new Shift(startDateTime, endDateTime, store, booker);
 					        shifts.add(shift);
 					        shift.getDuration();
 					        System.out.println("Month: " + shift.getMonth());
