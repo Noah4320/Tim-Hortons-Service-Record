@@ -88,9 +88,9 @@ public class Main extends Application {
 			//Parse to/from dates
 			DateTimeFormatter localStringFormatter = DateTimeFormatter.ofPattern("MM/dd/yy");
 			
-			 SimpleDateFormat localDateFormatter = new SimpleDateFormat( "MM/dd/yy" );
-		     java.util.Date fromDate = localDateFormatter.parse(localFromDate.format(localStringFormatter));
-		     java.util.Date toDate = localDateFormatter.parse(localToDate.format(localStringFormatter));
+			SimpleDateFormat localDateFormatter = new SimpleDateFormat( "MM/dd/yy" );
+		    java.util.Date fromDate = localDateFormatter.parse(localFromDate.format(localStringFormatter));
+		    java.util.Date toDate = localDateFormatter.parse(localToDate.format(localStringFormatter));
 			
 		    
 			
@@ -119,7 +119,8 @@ public class Main extends Application {
 				String[] months = calendar.getShortMonths();
 				String[] daysOfWeek = calendar.getWeekdays();
 
-				String booker = message.getContent().toString().split("\\r?\\n")[15].trim();
+				int indexOfBooker = Arrays.asList(message.getContent().toString().split("\\r?\\n")).indexOf("Thanks,") + 1;
+				String booker = message.getContent().toString().split("\\r?\\n")[indexOfBooker].trim();
 
 				System.out.println("Text - " + message.getContent().toString());
 				
@@ -206,7 +207,22 @@ public class Main extends Application {
 		String[] shiftsSplit = message.getContent().toString().split("\\r?\\n"); 		
 		//Convert to list and take shift data only. ToDo: Considering taking manager name of who distributed email and which store 
 		List<String> shiftsAsString = Arrays.asList(shiftsSplit);
-		shiftsAsString = shiftsAsString.subList(6, 13);
+		
+		int startIndex = 0;
+		int endIndex = 0;
+		
+		for (int i=0; i < shiftsAsString.size(); i++) {
+			
+			if (shiftsAsString.get(i).contains("Monday")) {
+				startIndex = i;
+			}
+			
+			if (shiftsAsString.get(i).contains("Sunday")) {
+				endIndex = i;
+			}
+		}
+		
+		shiftsAsString = shiftsAsString.subList(startIndex, endIndex);
 		
 		return shiftsAsString;
 	}
