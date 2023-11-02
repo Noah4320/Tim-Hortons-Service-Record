@@ -95,100 +95,18 @@ public class Main extends Application {
 		    
 			
 			//Apply filters
-			Message[] emailMessages = folder.search(applyFilters(fromDate, toDate));
-			System.out.println("Total Message - " + emailMessages.length);	
-			//System.out.println("Total Message - " + emailMessages.length);
-			
-			//Iternate the messages
-			for (int i = 0; i < emailMessages.length; i++) {
-				Message message = emailMessages[i];
-				//5, 9
-				String[] subjectSplit = message.getSubject().split(" ");
-				Address[] toAddress = message.getRecipients(Message.RecipientType.TO);
-				System.out.println();
-				System.out.println("Email " + (i+1) + "-");
-				System.out.println("From - " + message.getFrom()[0]);
-				System.out.println("To - ");
+		    
+		    //2017-2019
+			Message[] emailMessages1 = folder.search(applyFilters("quickservicesoftware", fromDate, toDate));
+			//2019
+			Message[] emailMessages2 = folder.search(applyFilters("qssweb", fromDate, toDate));
+			//2019-2022
+			Message[] emailMessages3 = folder.search(applyFilters("clearviewconnect", fromDate, toDate));
 				
-				for (int j = 0; j < toAddress.length; j++) {
-					System.out.println(toAddress[j].toString());
-				}
-			
-				//Get calendar metadata
-				DateFormatSymbols calendar = new DateFormatSymbols();
-				String[] months = calendar.getShortMonths();
-				String[] daysOfWeek = calendar.getWeekdays();
-
-				int indexOfBooker = Arrays.asList(message.getContent().toString().split("\\r?\\n")).indexOf("Thanks,") + 1;
-				String booker = message.getContent().toString().split("\\r?\\n")[indexOfBooker].trim();
-
-				System.out.println("Text - " + message.getContent().toString());
-				
-				for (String shiftAsString : getShiftsAsString(message)) {
+			processEmails(emailMessages1, shifts);
+			processEmails(emailMessages2, shifts);
+			processEmails(emailMessages3, shifts);
 					
-					if (!shiftAsString.contains("Not Scheduled"))
-					{
-					
-					String monthDayAsString = shiftAsString.split(":")[0].trim();
-					String monthAsString = monthDayAsString.split(" ")[0].trim();
-					String dayAsString = monthDayAsString.split(" ")[1].trim();
-					String store = shiftAsString.split(" ")[12].trim();
-				
-				        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
-				        Matcher matcher = pattern.matcher(shiftAsString);
-				        
-				        String startTimeString = null;
-			            String endTimeString = null;
-				        
-			            //Get start and end time
-				        while (matcher.find()) {
-				            
-				            
-				            if (startTimeString == null)
-				            {
-				            	startTimeString = matcher.group();
-				            }
-				            else
-				            {
-				            	endTimeString = matcher.group();
-				            }
-				        }
-				        
-				       //Process the date and times
-				       if (startTimeString != null && endTimeString != null)
-				       {
-				    	   DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mma");
-				    	   DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
-				    	   
-					        LocalTime startTime = LocalTime.parse(startTimeString, timeFormatter);
-					        LocalTime endTime = LocalTime.parse(endTimeString, timeFormatter);
-
-					        LocalDate date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
-					        
-					        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
-					        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
-					        
-					        Shift shift = new Shift(startDateTime, endDateTime, subjectSplit[subjectSplit.length - 1],  store, booker);
-					        
-					        if (subjectSplit[subjectSplit.length - 1].equals("changed")) {
-					        	shift.removeDuplicates(shifts);
-					        }
-					        else {
-					        	shifts.add(shift);
-					        }
-					        
-					        shift.getDuration();
-					        System.out.println("Month: " + shift.getMonth());
-				       }
-					}
-					
-				}
-				
-				
-			}
-			
-			
-			
 			folder.close(false);
 			mailStore.close();
 		} catch (Exception e) {
@@ -198,9 +116,110 @@ public class Main extends Application {
 		return shifts;
 	}
 	
-	public static SearchTerm applyFilters(Date fromDate, Date toDate) {
+	public static void processEmails(Message[] emailMessages, List<Shift> shifts) throws MessagingException, IOException {
+		
+		System.out.println("Total Message - " + emailMessages.length);
+		
+		//Iternate the messages
+		for (int i = 0; i < emailMessages.length; i++) {
+			Message message = emailMessages[i];
+
+			String[] subjectSplit = message.getSubject().split(" ");
+			Address[] toAddress = message.getRecipients(Message.RecipientType.TO);
+			System.out.println();
+			System.out.println("Email " + (i+1) + "-");
+			System.out.println("From - " + message.getFrom()[0]);
+			System.out.println("To - ");
+			
+			for (int j = 0; j < toAddress.length; j++) {
+				System.out.println(toAddress[j].toString());
+			}
+		
+			//Get calendar metadata
+			DateFormatSymbols calendar = new DateFormatSymbols();
+			String[] months = calendar.getShortMonths();
+			String[] daysOfWeek = calendar.getWeekdays();
+
+			int indexOfBooker = Arrays.asList(message.getContent().toString().split("\\r?\\n")).indexOf("Thanks,") + 1;
+			String booker = message.getContent().toString().split("\\r?\\n")[indexOfBooker].trim();
+
+			System.out.println("Text - " + message.getContent().toString());
+			
+			for (String shiftAsString : getShiftsAsString(message)) {
+				
+				if (!shiftAsString.contains("Not Scheduled"))
+				{
+				
+				try {
+					String monthDayAsString = shiftAsString.split(":")[0].trim();
+					String monthAsString = monthDayAsString.split(" ")[0].trim();
+					String dayAsString = monthDayAsString.split(" ")[1].trim();
+					String store = shiftAsString.split(" ")[12].trim();
+				
+			        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
+			        Matcher matcher = pattern.matcher(shiftAsString);
+			        
+			        String startTimeString = null;
+		            String endTimeString = null;
+			        
+		            //Get start and end time
+			        while (matcher.find()) {
+			            
+			            
+			            if (startTimeString == null)
+			            {
+			            	startTimeString = matcher.group();
+			            }
+			            else
+			            {
+			            	endTimeString = matcher.group();
+			            }
+			        }
+			        
+			       //Process the date and times
+			       if (startTimeString != null && endTimeString != null)
+			       {
+			    	   DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mma");
+			    	   DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+			    	   
+				        LocalTime startTime = LocalTime.parse(startTimeString, timeFormatter);
+				        LocalTime endTime = LocalTime.parse(endTimeString, timeFormatter);
+
+				        LocalDate date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
+				        
+				        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
+				        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
+				        
+				        Shift shift = new Shift(startDateTime, endDateTime, subjectSplit[subjectSplit.length - 1],  store, booker);
+				        
+				        if (subjectSplit[subjectSplit.length - 1].equals("changed")) {
+				        	shift.removeDuplicates(shifts);
+				        }
+				        else {
+				        	shifts.add(shift);
+				        }
+				        
+				        shift.getDuration();
+				        System.out.println("Month: " + shift.getMonth());
+			       }
+			       
+				} catch (Exception e) {
+					//e.printStackTrace();
+					System.err.println("Issue with processing shift: " + shiftAsString);
+				}
+				
+				}
+				
+			} // end loop for processing shift
+			
+			
+		} //end loop for processing email
+	}
+	
+	public static SearchTerm applyFilters(String address, Date fromDate, Date toDate) {
 		//Create filters
-		SearchTerm filterAddress = new FromStringTerm("clearviewconnect");
+		
+		SearchTerm filterAddress = new FromStringTerm(address);
 		SearchTerm filterFromDate = new ReceivedDateTerm(ComparisonTerm.GT, fromDate);
 		SearchTerm filterToDate = new ReceivedDateTerm(ComparisonTerm.LT, toDate);
 		SearchTerm[] allFilters = {filterAddress, filterFromDate, filterToDate};
