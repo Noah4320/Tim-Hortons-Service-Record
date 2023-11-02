@@ -168,8 +168,15 @@ public class Main extends Application {
 					        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
 					        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
 					        
-					        Shift shift = new Shift(startDateTime, endDateTime, store, booker);
-					        shifts.add(shift);
+					        Shift shift = new Shift(startDateTime, endDateTime, subjectSplit[subjectSplit.length - 1],  store, booker);
+					        
+					        if (subjectSplit[subjectSplit.length - 1].equals("changed")) {
+					        	shift.removeDuplicates(shifts);
+					        }
+					        else {
+					        	shifts.add(shift);
+					        }
+					        
 					        shift.getDuration();
 					        System.out.println("Month: " + shift.getMonth());
 				       }
@@ -222,7 +229,7 @@ public class Main extends Application {
 			}
 		}
 		
-		shiftsAsString = shiftsAsString.subList(startIndex, endIndex);
+		shiftsAsString = shiftsAsString.subList(startIndex, endIndex + 1);
 		
 		return shiftsAsString;
 	}

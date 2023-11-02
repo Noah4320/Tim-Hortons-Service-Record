@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class Shift {
 	
@@ -13,11 +14,13 @@ public class Shift {
 	private String booker;
 	private double money;
 	private String store;
+	private String period;
 	
 	
-	public Shift (LocalDateTime startDateTime, LocalDateTime finishDateTime, String store, String booker) {
+	public Shift (LocalDateTime startDateTime, LocalDateTime finishDateTime, String period, String store, String booker) {
 		this.startDateTime = startDateTime;
 		this.finishDateTime = finishDateTime;
+		this.period = period;
 		this.store = store;
 		this.booker = booker;
 		
@@ -46,6 +49,19 @@ public class Shift {
                 duration.toSecondsPart()
         );  
         return duration;
+	}
+
+	public void removeDuplicates(List<Shift> shifts) {
+		
+		for(int i=0; i < shifts.size(); i++) {
+			
+			if (shifts.get(i).startDateTime.toLocalDate().equals(this.startDateTime.toLocalDate()) && shifts.get(i).finishDateTime.toLocalDate().equals(this.finishDateTime.toLocalDate())) {
+				shifts.remove(i);
+				shifts.add(this);
+			}
+			
+		}
+		
 	}
 
 }
