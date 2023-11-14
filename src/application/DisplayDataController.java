@@ -15,12 +15,21 @@ public class DisplayDataController {
 
 	@FXML
 	private Label fromDateLabel;
+	@FXML
+	private Label toDateLabel;
+	@FXML
+	private Label moneyEarnedLabel;
 	
 	DataSingleton data = DataSingleton.getInstance();
 
 	public void initialize() {
 	    
-		fromDateLabel.setText("test");
+		
+		if (!data.getShifts().isEmpty()) {
+			fromDateLabel.setText(data.getShifts().get(0).getStartDateTIme().toLocalDate().toString());
+			toDateLabel.setText(data.getShifts().get(data.getShifts().size() - 1).getStartDateTIme().toLocalDate().toString());
+			moneyEarnedLabel.setText(String.format("$%.2f", Shift.getTotalMoney(data.getShifts())));
+		}
 		
 	}
 	

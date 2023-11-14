@@ -4,12 +4,14 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DisplayDataController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DisplayDataController">
    <children>
       <Label layoutX="32.0" layoutY="14.0" prefHeight="17.0" prefWidth="72.0" text="From:" />
       <Label layoutX="229.0" layoutY="14.0" text="To:" />
       <Label layoutX="14.0" layoutY="79.0" text="Money Earned:" />
       <Label fx:id="fromDateLabel" layoutX="68.0" layoutY="14.0" text="Label" />
       <ListView fx:id="shiftsLabel" editable="true" layoutX="37.0" layoutY="122.0" prefHeight="200.0" prefWidth="200.0" />
+      <Label fx:id="toDateLabel" layoutX="251.0" layoutY="14.0" text="Label" />
+      <Label fx:id="moneyEarnedLabel" layoutX="104.0" layoutY="79.0" text="Label" />
    </children>
 </AnchorPane>

@@ -188,9 +188,10 @@ public class Main extends Application {
 				        LocalDate date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
 				        
 				        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
-				        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
+				        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);			       
 				        
 				        Shift shift = new Shift(startDateTime, endDateTime, subjectSplit[subjectSplit.length - 1],  store, booker);
+				                
 				        
 				        if (subjectSplit[subjectSplit.length - 1].equals("changed")) {
 				        	shift.removeDuplicates(shifts);
@@ -199,7 +200,14 @@ public class Main extends Application {
 				        	shifts.add(shift);
 				        }
 				        
-				        shift.getDuration();
+				        shift.processMoney();
+				        
+				        
+				        System.out.printf("Duration: %d hours, %d minutes, %d seconds %n",
+				                shift.getDuration().toHours(),
+				                shift.getDuration().toMinutesPart(),
+				                shift.getDuration().toSecondsPart()
+				        );
 				        System.out.println("Month: " + shift.getMonth());
 			       }
 			       
