@@ -1,9 +1,12 @@
 package application;
 
 import java.text.DateFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +37,54 @@ public class Shift {
 	
 	public String getDayOfWeek() {
 		return startDateTime.getDayOfWeek().toString();
+	}
+	
+	public String getTimeAsString() {
+		
+		String result = "";
+		String startResult = "";
+		String finishResult = "";
+		
+		try {
+			final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+			
+			final Date startDate = sdf.parse(startDateTime.toLocalTime().toString());
+		    startResult = new SimpleDateFormat("K:mm a").format(startDate);
+		    startResult = midnightAndNoonFix(startResult);
+		    
+		    final Date finishDate = sdf.parse(finishDateTime.toLocalTime().toString());
+		    finishResult = new SimpleDateFormat("K:mm a").format(finishDate);
+		    finishResult = midnightAndNoonFix(finishResult);
+		    
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		result = startResult + " - " + finishResult;
+		
+		return result;
+	}
+	
+	public String midnightAndNoonFix(String result) {
+		
+		        // 12 for some reason outputs 0
+				if (result.equals("0:00 AM")) {
+					result = "12:00 AM";
+				}
+				
+				if (result.equals("0:30 AM")) {
+					result = "12:30 AM";
+				}
+				
+				if (result.equals("0:00 PM")) {
+					result = "12:00 PM";
+				}
+				
+				if (result.equals("0:30 PM")) {
+					result = "12:30 PM";
+				}
+				
+				return result;
 	}
 	
 	public void processMoney() {
@@ -115,11 +166,11 @@ public class Shift {
 		
 	}
 	
-	public LocalDateTime getStartDateTIme() {
+	public LocalDateTime getStartDateTime() {
 		return startDateTime;
 	}
 
-	public LocalDateTime getFinishDateTIme() {
+	public LocalDateTime getFinishDateTime() {
 		return startDateTime;
 	}
 	
