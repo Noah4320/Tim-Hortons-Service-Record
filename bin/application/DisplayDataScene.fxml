@@ -18,5 +18,6 @@
       <Label fx:id="totalShiftsLabel" layoutX="104.0" layoutY="55.0" text="Label" />
       <ListView fx:id="dayOccurrenceListView" editable="true" layoutX="18.0" layoutY="142.0" prefHeight="200.0" prefWidth="200.0" />
       <Button layoutX="287.0" layoutY="109.0" mnemonicParsing="false" onAction="#btnSortToggleShiftsClicked" text="Sort Toggle" />
+      <Button layoutX="79.0" layoutY="109.0" mnemonicParsing="false" onAction="#btnSortToggleDaysClicked" text="Sort Toggle" />
    </children>
 </AnchorPane>
