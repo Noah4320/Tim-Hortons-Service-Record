@@ -1,13 +1,18 @@
 package application;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -34,6 +39,10 @@ public class DisplayDataController {
 	private ListView<String> dayOccurrenceListView;
 	
 	DataSingleton data = DataSingleton.getInstance();
+	
+	public static Map<String, Integer> shiftsDictonary;
+	
+	public static boolean sortedByValue = false;
 
 	public void initialize() {
 	    
@@ -44,15 +53,10 @@ public class DisplayDataController {
 			totalShiftsLabel.setText(Integer.toString(data.getShifts().size()));
 			moneyEarnedLabel.setText(String.format("$%.2f", Shift.getTotalMoney(data.getShifts())));
 			
+			populateShiftOccurrenceListView();
 			
-			Map<String, Integer> sortedShiftsDictonary = new TreeMap<>(countShiftOccurrences(data.getShifts()));
-			
-			for (Map.Entry<String, Integer> entry : sortedShiftsDictonary.entrySet()) {
-				shiftOccurrenceListView.getItems().add(entry.getKey() + " Count: " + entry.getValue());
-			}
-			
-	        Map<String, Integer> sortedDayDictonary = new TreeMap<>(countDayOccurrences(data.getShifts()));
-			
+	        Map<String, Integer> sortedDayDictonary = new LinkedHashMap<>(countDayOccurrences(data.getShifts()));
+	        
 			for (Map.Entry<String, Integer> entry : sortedDayDictonary.entrySet()) {
 				dayOccurrenceListView.getItems().add(entry.getKey() + " Count: " + entry.getValue());
 			}
@@ -61,10 +65,34 @@ public class DisplayDataController {
 		
 	}
 	
+	@FXML
+	public void btnSortToggleShiftsClicked(ActionEvent event) throws IOException {
+    	
+    	if (!sortedByValue) {
+    		List<Map.Entry<String, Integer>> sortedList = shiftsDictonary.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).collect(Collectors.toList());
+        	
+        	shiftOccurrenceListView.getItems().clear();
+        	
+        	for (Map.Entry<String, Integer> entry : sortedList) {
+    			shiftOccurrenceListView.getItems().add(entry.getKey() + " Count: " + entry.getValue());
+    		}
+        	sortedByValue = true;
+    	} 
+    	else {
+    		populateShiftOccurrenceListView();
+    		sortedByValue = false;
+    	}
+    	
+    }
+	
 	
 	public Map<String, Integer> countShiftOccurrences (List<Shift> shifts) {
 		
-		Map<String, Integer> shiftDictonary = new HashMap<>();
+		Map<String, Integer> shiftDictonary = new LinkedHashMap<>();
+		
+		Comparator<Shift> compareTime = (c1, c2) -> c1.getStartDateTime().toLocalTime().compareTo(c2.getStartDateTime().toLocalTime());
+		
+		shifts.sort(compareTime);
 		
 		for (Shift shift : shifts) {
 			
@@ -78,7 +106,7 @@ public class DisplayDataController {
 	
     public Map<String, Integer> countDayOccurrences (List<Shift> shifts) {
 		
-		Map<String, Integer> dayDictonary = new HashMap<>();
+		Map<String, Integer> dayDictonary = new LinkedHashMap<>();
 		
 		for (Shift shift : shifts) {
 			
@@ -88,6 +116,20 @@ public class DisplayDataController {
 		}
 		
 		return dayDictonary;
+    }
+    
+    
+    public void populateShiftOccurrenceListView() {
+    	
+    	if(shiftOccurrenceListView.getItems().size() != 0) {
+    		shiftOccurrenceListView.getItems().clear();
+    	}
+    	
+    	shiftsDictonary = new LinkedHashMap<>(countShiftOccurrences(data.getShifts()));
+		
+		for (Map.Entry<String, Integer> entry : shiftsDictonary.entrySet()) {
+			shiftOccurrenceListView.getItems().add(entry.getKey() + " Count: " + entry.getValue());
+		}
     }
 	
 }
