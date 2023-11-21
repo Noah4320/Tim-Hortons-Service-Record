@@ -46,6 +46,8 @@ public class DisplayDataController {
 	
 	public static boolean sortedShiftsByValue = false;
 	public static boolean sortedDaysByValue = false;
+	
+	public static DayOfWeek dayOfWeek;
 
 	public void initialize() {
 	    
@@ -59,6 +61,17 @@ public class DisplayDataController {
 			populateShiftOccurrenceListView();
 			populateDaysOccurrenceListView();
 
+			
+			dayOccurrenceListView.setOnMouseClicked(event -> {
+				
+				String day = dayOccurrenceListView.getSelectionModel().getSelectedItem();
+				day = day.split(" ")[0];
+				
+				dayOfWeek = DayOfWeek.valueOf(day);
+				populateShiftOccurrenceListView();
+				
+			});
+			
 		}
 		
 	}
@@ -103,6 +116,15 @@ public class DisplayDataController {
     	
     }
 	
+	@FXML
+	public void btnResetShiftListViewClicked(ActionEvent event) throws IOException {
+		
+		dayOfWeek = null;
+		
+		populateShiftOccurrenceListView();
+		
+	}
+	
 	
 	public Map<String, Integer> countShiftOccurrences (List<Shift> shifts) {
 		
@@ -114,9 +136,22 @@ public class DisplayDataController {
 		
 		for (Shift shift : shifts) {
 			
-			String time = shift.getTimeAsString();
-			
-			shiftDictonary.put(time, shiftDictonary.getOrDefault(time, 0) + 1);
+			if (dayOfWeek != null) {
+				
+				if (dayOfWeek.equals(shift.getStartDateTime().toLocalDate().getDayOfWeek())) {
+					
+					String time = shift.getTimeAsString();
+					
+					shiftDictonary.put(time, shiftDictonary.getOrDefault(time, 0) + 1);
+					
+				}
+			}		
+			else {
+				
+				String time = shift.getTimeAsString();
+				
+				shiftDictonary.put(time, shiftDictonary.getOrDefault(time, 0) + 1);
+			}
 		}
 		
 		return shiftDictonary;

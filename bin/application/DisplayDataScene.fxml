@@ -4,20 +4,34 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DisplayDataController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="613.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DisplayDataController">
    <children>
-      <Label layoutX="32.0" layoutY="14.0" prefHeight="17.0" prefWidth="72.0" text="From:" />
-      <Label layoutX="229.0" layoutY="14.0" text="To:" />
-      <Label layoutX="14.0" layoutY="79.0" text="Money Earned:" />
-      <Label fx:id="fromDateLabel" layoutX="68.0" layoutY="14.0" text="Label" />
-      <ListView fx:id="shiftOccurrenceListView" editable="true" layoutX="237.0" layoutY="142.0" prefHeight="200.0" prefWidth="200.0" />
-      <Label fx:id="toDateLabel" layoutX="251.0" layoutY="14.0" text="Label" />
-      <Label fx:id="moneyEarnedLabel" layoutX="104.0" layoutY="79.0" text="Label" />
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="72.0" text="From:">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
+      <Label layoutX="446.0" layoutY="14.0" text="To:">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="139.0" text="Money Earned:" />
+      <Label fx:id="fromDateLabel" layoutX="79.0" layoutY="15.0" text="N/A">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
+      <ListView fx:id="shiftOccurrenceListView" editable="true" layoutX="338.0" layoutY="217.0" prefHeight="296.0" prefWidth="253.0" />
+      <Label fx:id="toDateLabel" layoutX="484.0" layoutY="14.0" text="N/A">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
+      <Label fx:id="moneyEarnedLabel" layoutX="104.0" layoutY="139.0" text="N/A" />
       <Label layoutX="14.0" layoutY="55.0" prefHeight="17.0" prefWidth="72.0" text="Total Shifts:" />
-      <Label fx:id="totalShiftsLabel" layoutX="104.0" layoutY="55.0" text="Label" />
-      <ListView fx:id="dayOccurrenceListView" editable="true" layoutX="18.0" layoutY="142.0" prefHeight="200.0" prefWidth="200.0" />
-      <Button layoutX="287.0" layoutY="109.0" mnemonicParsing="false" onAction="#btnSortToggleShiftsClicked" text="Sort Toggle" />
-      <Button layoutX="79.0" layoutY="109.0" mnemonicParsing="false" onAction="#btnSortToggleDaysClicked" text="Sort Toggle" />
+      <Label fx:id="totalShiftsLabel" layoutX="104.0" layoutY="55.0" text="N/A" />
+      <ListView fx:id="dayOccurrenceListView" editable="true" layoutX="26.0" layoutY="217.0" prefHeight="296.0" prefWidth="271.0" />
+      <Button layoutX="426.0" layoutY="184.0" mnemonicParsing="false" onAction="#btnSortToggleShiftsClicked" text="Sort Toggle" />
+      <Button layoutX="115.0" layoutY="184.0" mnemonicParsing="false" onAction="#btnSortToggleDaysClicked" text="Sort Toggle" />
+      <Button layoutX="297.0" layoutY="184.0" mnemonicParsing="false" onAction="#btnResetShiftListViewClicked" text="Reset" />
    </children>
 </AnchorPane>
