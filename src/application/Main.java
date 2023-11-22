@@ -154,7 +154,19 @@ public class Main extends Application {
 					String monthDayAsString = shiftAsString.split(":")[0].trim();
 					String monthAsString = monthDayAsString.split(" ")[0].trim();
 					String dayAsString = monthDayAsString.split(" ")[1].trim();
-					String store = shiftAsString.split(" ")[12].trim();
+					String store = "";
+					
+					for (String word : shiftAsString.split(" ")) {
+						
+						if (word.contains("#")) {
+						    store = "Main";
+						}
+						
+						if (store.equals("")) {
+							store = "Esso";
+						}
+						
+					}
 				
 			        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{2}(AM|PM)");
 			        Matcher matcher = pattern.matcher(shiftAsString);

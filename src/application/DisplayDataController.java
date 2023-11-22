@@ -38,6 +38,10 @@ public class DisplayDataController {
 	private ListView<String> shiftOccurrenceListView;
 	@FXML
 	private ListView<String> dayOccurrenceListView;
+	@FXML
+	private ListView<String> storeOccurrenceListView;
+	@FXML
+	private ListView<String> bookerOccurrenceListView;
 	
 	DataSingleton data = DataSingleton.getInstance();
 	
@@ -47,7 +51,7 @@ public class DisplayDataController {
 	public static boolean sortedShiftsByValue = false;
 	public static boolean sortedDaysByValue = false;
 	
-	public static DayOfWeek dayOfWeek;
+	public static DayOfWeek dayOfWeekFilter;
 
 	public void initialize() {
 	    
@@ -60,6 +64,8 @@ public class DisplayDataController {
 			
 			populateShiftOccurrenceListView();
 			populateDaysOccurrenceListView();
+			populateStoreOccurrenceListView();
+			populateBookerOccurrenceListView();
 
 			
 			dayOccurrenceListView.setOnMouseClicked(event -> {
@@ -67,10 +73,10 @@ public class DisplayDataController {
 				String day = dayOccurrenceListView.getSelectionModel().getSelectedItem();
 				day = day.split(" ")[0];
 				
-				dayOfWeek = DayOfWeek.valueOf(day);
+				dayOfWeekFilter = DayOfWeek.valueOf(day);
 				populateShiftOccurrenceListView();
 				
-			});
+			});			
 			
 		}
 		
@@ -119,7 +125,7 @@ public class DisplayDataController {
 	@FXML
 	public void btnResetShiftListViewClicked(ActionEvent event) throws IOException {
 		
-		dayOfWeek = null;
+		dayOfWeekFilter = null;
 		
 		populateShiftOccurrenceListView();
 		
@@ -130,15 +136,14 @@ public class DisplayDataController {
 		
 		Map<String, Integer> shiftDictonary = new LinkedHashMap<>();
 		
-		Comparator<Shift> compareTime = (c1, c2) -> c1.getStartDateTime().toLocalTime().compareTo(c2.getStartDateTime().toLocalTime());
-		
+		Comparator<Shift> compareTime = (c1, c2) -> c1.getStartDateTime().toLocalTime().compareTo(c2.getStartDateTime().toLocalTime());		
 		shifts.sort(compareTime);
 		
 		for (Shift shift : shifts) {
 			
-			if (dayOfWeek != null) {
+			if (dayOfWeekFilter != null) {
 				
-				if (dayOfWeek.equals(shift.getStartDateTime().toLocalDate().getDayOfWeek())) {
+				if (dayOfWeekFilter.equals(shift.getStartDateTime().toLocalDate().getDayOfWeek())) {
 					
 					String time = shift.getTimeAsString();
 					
@@ -161,8 +166,7 @@ public class DisplayDataController {
 		
 		Map<DayOfWeek, Integer> dayDictonary = new LinkedHashMap<>();
 		
-        Comparator<Shift> compareTime = (c1, c2) -> c1.getStartDateTime().toLocalDate().getDayOfWeek().compareTo(c2.getStartDateTime().toLocalDate().getDayOfWeek());
-		
+        Comparator<Shift> compareTime = (c1, c2) -> c1.getStartDateTime().toLocalDate().getDayOfWeek().compareTo(c2.getStartDateTime().toLocalDate().getDayOfWeek());		
 		shifts.sort(compareTime);
 		
 		for (Shift shift : shifts) {
@@ -173,6 +177,28 @@ public class DisplayDataController {
 		}
 		
 		return dayDictonary;
+    }
+    
+    public Map<String, Integer> countStoreOccurrences (List<Shift> shifts) {
+    	
+    	Map<String, Integer> storeDictionary = new LinkedHashMap<>();
+    	
+    	for (Shift shift : shifts) {
+    		storeDictionary.put(shift.getStore(), storeDictionary.getOrDefault(shift.getStore(), 0) + 1);
+    	}
+    	
+    	return storeDictionary;
+    }
+    
+    public Map<String, Integer> countBookerOccurrences (List<Shift> shifts) {
+    	
+    	Map<String, Integer> bookerDictionary = new LinkedHashMap<>();
+    	
+    	for (Shift shift : shifts) {
+    		bookerDictionary.put(shift.getBooker(), bookerDictionary.getOrDefault(shift.getBooker(), 0) + 1);
+    	}
+    	
+    	return bookerDictionary;
     }
     
     
@@ -202,4 +228,30 @@ public class DisplayDataController {
 		}
     }
 	
+    public void populateStoreOccurrenceListView() {
+    	
+    	if(storeOccurrenceListView.getItems().size() != 0) {
+    		storeOccurrenceListView.getItems().clear();
+    	}
+    	
+    	LinkedHashMap<String, Integer> storeDictonary = new LinkedHashMap<>(countStoreOccurrences(data.getShifts()));
+    	
+    	for (Map.Entry<String, Integer> entry : storeDictonary.entrySet()) {
+			storeOccurrenceListView.getItems().add(entry.getKey() + " Count: " + entry.getValue());
+		}
+    }
+    
+    public void populateBookerOccurrenceListView() {
+    	
+    	if(bookerOccurrenceListView.getItems().size() != 0) {
+    		bookerOccurrenceListView.getItems().clear();
+    	}
+    	
+    	LinkedHashMap<String, Integer> bookerDictonary = new LinkedHashMap<>(countBookerOccurrences(data.getShifts()));
+    	
+    	for (Map.Entry<String, Integer> entry : bookerDictonary.entrySet()) {
+			bookerOccurrenceListView.getItems().add(entry.getKey() + " Count: " + entry.getValue());
+		}
+    }
+    
 }
