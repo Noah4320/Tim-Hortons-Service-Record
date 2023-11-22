@@ -6,12 +6,16 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 public class MainSceneController {
@@ -24,8 +28,16 @@ public class MainSceneController {
 	private DatePicker fromDatePicker;
 	@FXML
 	private DatePicker toDatePicker;
+	@FXML
+	private ProgressBar progressBar;
+	@FXML
+	private ProgressIndicator progressIndicator;
+	@FXML
+	private Label errorLabel;
 	
 	DataSingleton data = DataSingleton.getInstance();
+	
+	public static double progressValue = 0;
 
 	// Event Listener on TextField.onAction
 	@FXML
@@ -41,20 +53,61 @@ public class MainSceneController {
 	// Event Listener on Button.onAction
 	@FXML
 	public void btnOkClicked(ActionEvent event) throws IOException {
+		
+		((Node) event.getSource()).setDisable(true);
+		errorLabel.setVisible(false);
+		
 		Stage mainWindow = (Stage) usernameTextField.getScene().getWindow();	
 		String username = usernameTextField.getText();
 		String password = passwordTextField.getText();
 		
-		data.setShifts(Main.receiveMail(username, password, fromDatePicker.getValue(), toDatePicker.getValue()));
-		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
-		Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-		
-		Parent root = loader.load();
+		Thread dataThread = new Thread(() -> {	
+			
+			data.setShifts(Main.receiveMail(username, password, fromDatePicker.getValue(), toDatePicker.getValue()));
+			
+			//Did it fail to grab emails?
+			if (data.getShifts().size() < 1) {
+				((Node) event.getSource()).setDisable(false);
+				errorLabel.setVisible(true);
+			} else {
+				Platform.runLater(() -> {
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
+					Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+					
+					Parent root = null;
+					try {
+						root = loader.load();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 
-	    Scene scene = new Scene(root);
-	    stage.setScene(scene);
-	    stage.show();
+				    Scene scene = new Scene(root);
+				    stage.setScene(scene);
+				    stage.show();
+				});
+			}
+			
+			
+		});
+		
+		dataThread.start();
+		
+		Thread progressThread = new Thread(() -> {
+			
+			while (true) {
+				
+				if (progressValue > 0) {
+					progressBar.setVisible(true);
+					progressIndicator.setVisible(true);
+				}
+				progressBar.setProgress(progressValue);
+				progressIndicator.setProgress(progressValue);
+			}
+			
+		});
+		
+		progressThread.start();
 		
 	}
+	
 }

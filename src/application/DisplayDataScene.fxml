@@ -8,11 +8,11 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="613.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DisplayDataController">
    <children>
-      <Label layoutX="14.0" layoutY="6.0" prefHeight="17.0" prefWidth="72.0" text="From:">
+      <Label layoutX="14.0" layoutY="8.0" prefHeight="17.0" prefWidth="72.0" text="From:">
          <font>
             <Font size="24.0" />
          </font></Label>
-      <Label layoutX="446.0" layoutY="6.0" text="To:">
+      <Label layoutX="446.0" layoutY="8.0" text="To:">
          <font>
             <Font size="24.0" />
          </font></Label>
@@ -20,12 +20,12 @@
          <font>
             <Font size="24.0" />
          </font></Label>
-      <Label fx:id="fromDateLabel" layoutX="79.0" layoutY="7.0" text="N/A">
+      <Label fx:id="fromDateLabel" layoutX="79.0" layoutY="9.0" text="N/A">
          <font>
             <Font size="24.0" />
          </font></Label>
       <ListView fx:id="shiftOccurrenceListView" editable="true" layoutX="338.0" layoutY="217.0" prefHeight="296.0" prefWidth="253.0" />
-      <Label fx:id="toDateLabel" layoutX="484.0" layoutY="6.0" text="N/A">
+      <Label fx:id="toDateLabel" layoutX="484.0" layoutY="8.0" text="N/A">
          <font>
             <Font size="24.0" />
          </font></Label>
@@ -38,7 +38,7 @@
       <ListView fx:id="dayOccurrenceListView" editable="true" layoutX="26.0" layoutY="217.0" prefHeight="296.0" prefWidth="271.0" />
       <Button layoutX="506.0" layoutY="184.0" mnemonicParsing="false" onAction="#btnSortToggleShiftsClicked" text="Sort Toggle" />
       <Button layoutX="216.0" layoutY="184.0" mnemonicParsing="false" onAction="#btnSortToggleDaysClicked" text="Sort Toggle" />
-      <Button layoutX="294.0" layoutY="550.0" mnemonicParsing="false" onAction="#btnResetShiftListViewClicked" text="Reset" />
+      <Button layoutX="294.0" layoutY="513.0" mnemonicParsing="false" onAction="#btnResetShiftListViewClicked" text="Reset" />
       <ListView fx:id="storeOccurrenceListView" editable="true" layoutX="14.0" layoutY="111.0" orientation="HORIZONTAL" prefHeight="56.0" prefWidth="284.0" />
       <ListView fx:id="bookerOccurrenceListView" editable="true" layoutX="333.0" layoutY="53.0" prefHeight="115.0" prefWidth="241.0" />
       <Label layoutX="14.0" layoutY="87.0" prefHeight="17.0" prefWidth="72.0" text="Stores:" />

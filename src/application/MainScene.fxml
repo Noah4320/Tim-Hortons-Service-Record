@@ -4,6 +4,8 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -26,5 +28,8 @@
       <DatePicker fx:id="fromDatePicker" layoutX="20.0" layoutY="223.0" />
       <Label layoutX="222.0" layoutY="200.0" text="To Date:" />
       <DatePicker fx:id="toDatePicker" layoutX="222.0" layoutY="223.0" />
+      <ProgressBar fx:id="progressBar" layoutX="94.0" layoutY="297.0" prefWidth="200.0" progress="0.0" visible="false" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="296.0" layoutY="277.0" prefHeight="40.0" prefWidth="79.0" progress="0.0" visible="false" />
+      <Label fx:id="errorLabel" layoutX="114.0" layoutY="289.0" text="Error in retrieving data" textFill="RED" visible="false" />
    </children>
 </AnchorPane>

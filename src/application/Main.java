@@ -37,13 +37,16 @@ import javafx.scene.Scene;
 
 
 public class Main extends Application {
+	
+	public static int totalMessages = 0;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("MainScene.fxml"));
 			Scene scene = new Scene(root);
 			
-			primaryStage.setTitle("Hello World!" );
+			primaryStage.setTitle("Tim Hortons Service Record" );
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -97,11 +100,13 @@ public class Main extends Application {
 			//Apply filters
 		    
 		    //2017-2019
-			Message[] emailMessages1 = folder.search(applyFilters("quickservicesoftware", fromDate, toDate));
+		    Message[] emailMessages1 = folder.search(applyFilters("quickservicesoftware", fromDate, toDate));
 			//2019
 			Message[] emailMessages2 = folder.search(applyFilters("qssweb", fromDate, toDate));
 			//2019-2022
 			Message[] emailMessages3 = folder.search(applyFilters("clearviewconnect", fromDate, toDate));
+			
+			totalMessages = emailMessages1.length + emailMessages2.length + emailMessages3.length;
 				
 			processEmails(emailMessages1, shifts);
 			processEmails(emailMessages2, shifts);
@@ -119,6 +124,7 @@ public class Main extends Application {
 	public static void processEmails(Message[] emailMessages, List<Shift> shifts) throws MessagingException, IOException {
 		
 		System.out.println("Total Message - " + emailMessages.length);
+		double localProgressValue = 0;
 		
 		//Iternate the messages
 		for (int i = 0; i < emailMessages.length; i++) {
@@ -232,6 +238,8 @@ public class Main extends Application {
 				
 			} // end loop for processing shift
 			
+			localProgressValue += 1;
+			MainSceneController.progressValue = localProgressValue / totalMessages;
 			
 		} //end loop for processing email
 	}
