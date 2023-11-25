@@ -94,7 +94,7 @@ public class MainSceneController {
 		
 		Thread progressThread = new Thread(() -> {
 			
-			while (true) {
+			while (progressValue < 1) {
 				
 				if (progressValue > 0) {
 					progressBar.setVisible(true);
