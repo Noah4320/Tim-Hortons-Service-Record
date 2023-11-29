@@ -153,17 +153,21 @@ public class Shift {
         return duration;
 	}
 
-	public void removeDuplicates(List<Shift> shifts) {
+	public boolean findAndReplaceDuplicates(List<Shift> shifts) {
+		
+		boolean ret = false;
 		
 		for(int i=0; i < shifts.size(); i++) {
 			
 			if (shifts.get(i).startDateTime.toLocalDate().equals(this.startDateTime.toLocalDate()) && shifts.get(i).finishDateTime.toLocalDate().equals(this.finishDateTime.toLocalDate())) {
 				shifts.remove(i);
 				shifts.add(this);
+				
+				ret = true;
 			}
 			
 		}
-		
+		return ret;
 	}
 	
 	public LocalDateTime getStartDateTime() {
@@ -171,7 +175,7 @@ public class Shift {
 	}
 
 	public LocalDateTime getFinishDateTime() {
-		return startDateTime;
+		return finishDateTime;
 	}
 	
 	public String getBooker() {

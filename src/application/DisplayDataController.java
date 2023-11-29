@@ -13,6 +13,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.calendarfx.model.Calendar;
+import com.calendarfx.model.Calendar.Style;
+import com.calendarfx.model.CalendarSource;
+import com.calendarfx.model.Entry;
+import com.calendarfx.view.CalendarView;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -129,6 +136,109 @@ public class DisplayDataController {
 		
 		populateShiftOccurrenceListView();
 		
+	}
+	
+	@FXML
+    public void btnCalendarClicked(ActionEvent event) throws IOException {
+	
+		//FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
+		Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		
+
+		CalendarView calendarView = new CalendarView();
+
+		Calendar threeHrShifts = new Calendar("3-hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() < 4).toList().size()) + ")");
+		Calendar fourHrShifts = new Calendar("4hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() >= 4 && i.getDuration().toHours() < 5).toList().size()) + ")");
+		Calendar fiveHrShifts = new Calendar("5hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() >= 5 && i.getDuration().toHours() < 6).toList().size()) + ")");
+		Calendar sixHrShifts = new Calendar("6hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() >= 6 && i.getDuration().toHours() < 7).toList().size()) + ")");
+		Calendar sevenHrShift = new Calendar("7hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() >= 7 && i.getDuration().toHours() < 8).toList().size()) + ")");
+		Calendar eightHrShifts = new Calendar("8hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() >= 8 && i.getDuration().toHours() < 9).toList().size()) + ")");
+		Calendar nineHrShifts = new Calendar("8+hr Shifts (" + String.valueOf(data.getShifts().stream().filter(i -> i.getDuration().toHours() >= 9).toList().size()) + ")");
+		
+		threeHrShifts.setStyle(Style.STYLE1);
+		fourHrShifts.setStyle(Style.STYLE2);
+		fiveHrShifts.setStyle(Style.STYLE3);
+		sixHrShifts.setStyle(Style.STYLE6);
+		sevenHrShift.setStyle(Style.STYLE5);
+		eightHrShifts.setStyle(Style.STYLE4);
+		nineHrShifts.setStyle(Style.STYLE7);
+		
+		for (int i=0; i < data.getShifts().size(); i++) {
+			
+			Shift shift = data.getShifts().get(i);
+			
+			Entry<String> shiftEntry = new Entry<>("Shift #" + String.valueOf(i + 1));
+			shiftEntry.setId(String.valueOf(i));
+			shiftEntry.setTitle("Shift #" + String.valueOf(i + 1));
+			//shiftEntry.setInterval(shift.getStartDateTime().toLocalDate());
+			shiftEntry.setInterval(shift.getStartDateTime(), shift.getFinishDateTime());
+			
+			if (shift.getDuration().toHours() < 4) {
+				threeHrShifts.addEntry(shiftEntry);
+			}
+			
+			else if (shift.getDuration().toHours() >= 4 && shift.getDuration().toHours() < 5) {
+				fourHrShifts.addEntry(shiftEntry);
+			}
+			
+			else if (shift.getDuration().toHours() >= 5 && shift.getDuration().toHours() < 6) {
+				fiveHrShifts.addEntry(shiftEntry);
+			}
+			
+			else if (shift.getDuration().toHours() >= 6 && shift.getDuration().toHours() < 7) {
+				sixHrShifts.addEntry(shiftEntry);
+			}
+			
+			else if (shift.getDuration().toHours() >= 7 && shift.getDuration().toHours() < 8) {
+				sevenHrShift.addEntry(shiftEntry);
+			}
+			
+			else if (shift.getDuration().toHours() >= 8 && shift.getDuration().toHours() < 9) {
+				eightHrShifts.addEntry(shiftEntry);
+			}
+			
+			else {
+				nineHrShifts.addEntry(shiftEntry);
+			}
+			
+		}
+		
+		
+		CalendarSource myCalendarSource = new CalendarSource("My Calendars");
+		myCalendarSource.getCalendars().addAll(threeHrShifts, fourHrShifts, fiveHrShifts, sixHrShifts, sevenHrShift, eightHrShifts, nineHrShifts);
+		
+		calendarView.getCalendarSources().addAll(myCalendarSource);
+		calendarView.setRequestedTime(data.getShifts().get(0).getStartDateTime().toLocalTime());
+		
+		Thread updateTimeThread = new Thread("Calendar: Update Time Thread") {
+			@Override
+			public void run() {
+				while (true) {
+					Platform.runLater(() -> {
+						calendarView.setToday(data.getShifts().get(0).getStartDateTime().toLocalDate());
+						calendarView.setTime(data.getShifts().get(0).getStartDateTime().toLocalTime());
+					});
+					
+					try {
+						sleep (10000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		
+		updateTimeThread.setPriority(Thread.MIN_PRIORITY);
+		updateTimeThread.setDaemon(true);
+		updateTimeThread.start();
+		
+		Scene scene = new Scene(calendarView);
+        stage.setTitle("Calendar");
+        stage.setScene(scene);
+        stage.setWidth(1300);
+        stage.setHeight(1000);
+        stage.centerOnScreen();
+        stage.show();
 	}
 	
 	

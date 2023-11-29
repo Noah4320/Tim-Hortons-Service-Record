@@ -1,5 +1,6 @@
 package application;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class DataSingleton {
@@ -16,6 +17,10 @@ public class DataSingleton {
 	
 	
 	public List<Shift> getShifts() {
+		
+		Comparator<Shift> compareDate = (c1, c2) -> c1.getStartDateTime().toLocalDate().compareTo(c2.getStartDateTime().toLocalDate());
+		shifts.sort(compareDate);
+		
 		return shifts;
 	}
 	

@@ -45,6 +45,7 @@ import javafx.scene.Scene;
 public class Main extends Application {
 	
 	public static int totalMessages = 0;
+	public static double localProgressValue = 0;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -131,7 +132,6 @@ public class Main extends Application {
 	public static void processEmails(Message[] emailMessages, List<Shift> shifts) throws MessagingException, IOException {
 		
 		System.out.println("Total Message - " + emailMessages.length);
-		double localProgressValue = 0;
 		
 		//Iternate the messages
 		for (int i = 0; i < emailMessages.length; i++) {
@@ -219,7 +219,13 @@ public class Main extends Application {
 				                
 				        
 				        if (subjectSplit[subjectSplit.length - 1].equals("changed")) {
-				        	shift.removeDuplicates(shifts);
+				        	
+				        	boolean isDuplicate = shift.findAndReplaceDuplicates(shifts);
+				        	
+				        	if (!isDuplicate) {
+				        		shifts.add(shift);
+				        	}
+				        	
 				        }
 				        else {
 				        	shifts.add(shift);
