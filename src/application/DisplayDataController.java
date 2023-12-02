@@ -17,18 +17,24 @@ import com.calendarfx.model.Calendar;
 import com.calendarfx.model.Calendar.Style;
 import com.calendarfx.model.CalendarSource;
 import com.calendarfx.model.Entry;
+import com.calendarfx.view.ButtonBar;
 import com.calendarfx.view.CalendarView;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class DisplayDataController {
@@ -232,7 +238,34 @@ public class DisplayDataController {
 		updateTimeThread.setDaemon(true);
 		updateTimeThread.start();
 		
-		Scene scene = new Scene(calendarView);
+		
+		Button backButton = new Button("Back to Display Data");
+		
+		backButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayDataScene.fxml"));
+				Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+				
+				Parent root = null;
+				try {
+					root = loader.load();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			    Scene scene = new Scene(root);
+			    stage.setScene(scene);
+			    stage.show();
+				
+			}
+		});
+		
+		VBox root = new VBox(backButton, calendarView);
+		VBox.setVgrow(calendarView, Priority.ALWAYS);
+
+		Scene scene = new Scene(root);
         stage.setTitle("Calendar");
         stage.setScene(scene);
         stage.setWidth(1300);
