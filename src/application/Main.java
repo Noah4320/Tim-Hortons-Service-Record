@@ -1,12 +1,14 @@
 package application;
 	
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,9 +118,9 @@ public class Main extends Application {
 			
 			totalMessages = emailMessages1.length + emailMessages2.length + emailMessages3.length;
 				
-			processEmails(emailMessages1, shifts);
-			processEmails(emailMessages2, shifts);
-			processEmails(emailMessages3, shifts);
+			processEmails(emailMessages1, shifts, localFromDate, localToDate);
+			processEmails(emailMessages2, shifts, localFromDate, localToDate);
+			processEmails(emailMessages3, shifts, localFromDate, localToDate);
 					
 			folder.close(false);
 			mailStore.close();
@@ -129,7 +131,7 @@ public class Main extends Application {
 		return shifts;
 	}
 	
-	public static void processEmails(Message[] emailMessages, List<Shift> shifts) throws MessagingException, IOException {
+	public static void processEmails(Message[] emailMessages, List<Shift> shifts, LocalDate fromLocalDate, LocalDate toLocalDate) throws MessagingException, IOException {
 		
 		System.out.println("Total Message - " + emailMessages.length);
 		
@@ -209,14 +211,26 @@ public class Main extends Application {
 			    	   
 				        LocalTime startTime = LocalTime.parse(startTimeString, timeFormatter);
 				        LocalTime endTime = LocalTime.parse(endTimeString, timeFormatter);
-
-				        LocalDate date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
+				        
+				        LocalDate date;
+				        //Detect if year flips
+				        if (monthAsString.equals("Jan")) {
+				        	 date = LocalDate.parse(subjectSplit[9] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
+				        } else {
+				        	 date = LocalDate.parse(subjectSplit[5] + "-" + monthAsString + "-" + dayAsString, dateFormatter);
+				        }
+				        
+				        
 				        
 				        LocalDateTime startDateTime = LocalDateTime.of(date, startTime);
 				        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);			       
 				        
-				        Shift shift = new Shift(startDateTime, endDateTime, subjectSplit[subjectSplit.length - 1],  store, booker);
-				                
+				        if (startDateTime.toLocalDate().isBefore(fromLocalDate) || startDateTime.toLocalDate().isAfter(toLocalDate)) {
+				        	continue;
+				        }
+				        
+				        //Add shift to list
+				        Shift shift = new Shift(startDateTime, endDateTime, subjectSplit[subjectSplit.length - 1],  store, booker);	                
 				        
 				        if (subjectSplit[subjectSplit.length - 1].equals("changed")) {
 				        	
@@ -258,8 +272,16 @@ public class Main extends Application {
 	}
 	
 	public static SearchTerm applyFilters(String address, Date fromDate, Date toDate) {
-		//Create filters
 		
+		LocalDate fromLocalDate = fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		fromLocalDate = fromLocalDate.minusWeeks(2);
+		fromDate = Date.from(fromLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		
+		LocalDate toLocalDate = toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		toLocalDate = toLocalDate.plusWeeks(2);
+		toDate = Date.from(toLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		
+		//Create filters
 		SearchTerm filterAddress = new FromStringTerm(address);
 		SearchTerm filterFromDate = new ReceivedDateTerm(ComparisonTerm.GT, fromDate);
 		SearchTerm filterToDate = new ReceivedDateTerm(ComparisonTerm.LT, toDate);
