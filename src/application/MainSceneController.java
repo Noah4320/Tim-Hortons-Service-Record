@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -34,8 +35,13 @@ public class MainSceneController {
 	private ProgressIndicator progressIndicator;
 	@FXML
 	private Label errorLabel;
+	@FXML
+	private Button okayButton;
 	
 	DataSingleton data = DataSingleton.getInstance();
+	
+    Thread dataThread;
+    Thread progressThread;
 	
 	public static double progressValue = 0;
 
@@ -54,6 +60,8 @@ public class MainSceneController {
 	@FXML
 	public void btnOkClicked(ActionEvent event) throws IOException {
 		
+		progressValue = 0;
+		
 		((Node) event.getSource()).setDisable(true);
 		errorLabel.setVisible(false);
 		
@@ -61,9 +69,13 @@ public class MainSceneController {
 		String username = usernameTextField.getText();
 		String password = passwordTextField.getText();
 		
-		Thread dataThread = new Thread(() -> {	
+	    dataThread = new Thread(() -> {	
 			
 			data.setShifts(Main.receiveMail(username, password, fromDatePicker.getValue(), toDatePicker.getValue()));
+			
+			if (Thread.currentThread().isInterrupted()) {
+				return;
+			}
 			
 			//Did it fail to grab emails?
 			if (data.getShifts().size() < 1) {
@@ -92,9 +104,9 @@ public class MainSceneController {
 		
 		dataThread.start();
 		
-		Thread progressThread = new Thread(() -> {
+		 progressThread = new Thread(() -> {
 			
-			while (progressValue < 1) {
+			while (progressValue < 1 && !Thread.currentThread().isInterrupted()) {
 				
 				if (progressValue > 0) {
 					progressBar.setVisible(true);
@@ -107,6 +119,19 @@ public class MainSceneController {
 		});
 		
 		progressThread.start();
+		
+	}
+	
+	@FXML
+	public void btnCancelClicked(ActionEvent event) throws IOException {
+	
+		progressThread.interrupt();
+		dataThread.interrupt();
+		
+		progressValue = 0;
+		okayButton.setDisable(false);
+		progressBar.setVisible(false);
+		progressIndicator.setVisible(false);
 		
 	}
 	

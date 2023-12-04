@@ -48,6 +48,7 @@ public class Main extends Application {
 	
 	public static int totalMessages = 0;
 	public static double localProgressValue = 0;
+	public static volatile boolean stopFlag = false;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -72,6 +73,7 @@ public class Main extends Application {
 	
 	public static List<Shift> receiveMail(String username, String password, LocalDate localFromDate, LocalDate localToDate)
 	{
+		localProgressValue = 0;
 		Properties props = new Properties();
 		
 		 props.setProperty("mail.transport.protocol", "smtp");
@@ -137,6 +139,11 @@ public class Main extends Application {
 		
 		//Iternate the messages
 		for (int i = 0; i < emailMessages.length; i++) {
+			
+			if (Thread.currentThread().isInterrupted()) {
+				return;
+			}
+			
 			Message message = emailMessages[i];
 
 			String[] subjectSplit = message.getSubject().split(" ");
