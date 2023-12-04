@@ -8,7 +8,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="613.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DisplayDataController">
    <children>
-      <Label layoutX="14.0" layoutY="8.0" prefHeight="17.0" prefWidth="72.0" text="From:">
+      <Label layoutX="68.0" layoutY="8.0" prefHeight="17.0" prefWidth="72.0" text="From:">
          <font>
             <Font size="24.0" />
          </font></Label>
@@ -20,7 +20,7 @@
          <font>
             <Font size="24.0" />
          </font></Label>
-      <Label fx:id="fromDateLabel" layoutX="79.0" layoutY="9.0" text="N/A">
+      <Label fx:id="fromDateLabel" layoutX="133.0" layoutY="9.0" text="N/A">
          <font>
             <Font size="24.0" />
          </font></Label>
@@ -46,5 +46,6 @@
       <Label layoutX="342.0" layoutY="188.0" prefHeight="17.0" prefWidth="111.0" text="Shift Occurences:" />
       <Label layoutX="333.0" layoutY="33.0" prefHeight="17.0" prefWidth="72.0" text="Bookers:" />
       <Button layoutX="467.0" layoutY="550.0" mnemonicParsing="false" onAction="#btnCalendarClicked" text="Go to Calendar" />
+      <Button layoutX="-1.0" layoutY="2.0" mnemonicParsing="false" onAction="#btnLogoutClicked" text="Logout" />
    </children>
 </AnchorPane>

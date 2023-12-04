@@ -274,6 +274,23 @@ public class DisplayDataController {
         stage.show();
 	}
 	
+	@FXML
+    public void btnLogoutClicked(ActionEvent event) throws IOException {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("MainScene.fxml"));
+		Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		
+		Parent root = null;
+		try {
+			root = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	    Scene scene = new Scene(root);
+	    stage.setScene(scene);
+	    stage.show();
+	}
+
 	
 	public Map<String, Integer> countShiftOccurrences (List<Shift> shifts) {
 		
